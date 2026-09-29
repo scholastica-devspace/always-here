@@ -3,9 +3,83 @@ import Image from '../components/Image';
 import Sign from '../assets/signup-img.png'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { BiError } from "react-icons/bi";
+import { useState } from 'react';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { Link } from 'react-router-dom';
 
 
 const SignUp = () => {
+
+    //Data Storing
+    const [email, setEmail] = useState('')
+    const [name, setName] = useState('')
+    const [password, setPassword] = useState('')
+
+    // Error Storing
+    const [emailError, setEmailError] = useState('')
+    const [nameError, setNameError] = useState('')
+    const [passwordError, setPasswordError] = useState('')
+
+    //Regex 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const lowercaseRegex = /^(?=.*[a-z])/
+    const uppercaseRegex = /(?=.*[A-Z])/
+    const digitRegex = /(?=.*\d)/
+    const specialRegex = /(?=.*[@$!%*?&])/
+    const charactersRegex = /[A-Za-z\d@$!%*?&]{8,}$/
+
+    //Eye Icon
+
+    const [showPassword, setShowPassword] = useState(true)
+
+    const handleSignUp = () => {
+
+        if (!email) {
+            setEmailError("Enter Your Email");
+        } else if (!emailRegex.test(email)) {
+            setEmailError("Enter Valid Email");
+        }
+        if (!name) {
+            setNameError("Enter Your Name");
+        }
+        if (!password) {
+            setPasswordError("Enter Your Password");
+        } else if (!lowercaseRegex.test(password)) {
+            setPasswordError("Ensure at least one lowercase letter");
+        } else if (!uppercaseRegex.test(password)) {
+            setPasswordError("Ensure at least one uppercase letter");
+        } else if (!digitRegex.test(password)) {
+            setPasswordError("Ensure at least one digit");
+        } else if (!specialRegex.test(password)) {
+            setPasswordError("Ensure at least one special character");
+        } else if (!charactersRegex.test(password)) {
+            setPasswordError("Ensure the password is at least 8 characters long");
+        }
+        if (email && emailRegex.test(email) && name && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
+            console.log("account created");
+
+        }
+
+    }
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
+        setEmailError("");
+    }
+
+    const handleName = (e) => {
+        setName(e.target.value);
+        setNameError("")
+    }
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value);
+        setPasswordError("")
+    }
+
     return (
         <Grid container>
             <Grid size={6}>
@@ -16,15 +90,38 @@ const SignUp = () => {
 
                         <p className='pb-10 font-nunito font-normal text-f20 text-black/50'>Free register <span className='font-nunito font-normal text-f20 text-light/50'>and</span> you can enjoy it</p>
 
-                        <TextField className='w-[70%] mb-8.5!' id="outlined-basic" label="Email Address" variant="outlined" />
+                        <TextField onChange={handleEmail} className='w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
+                        {
+                            emailError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{emailError}</p>
+                        }
 
-                        <TextField className='w-[70%] mb-8.5!' id="outlined-basic" label="Full name" variant="outlined" />
+                        <TextField onChange={handleName} className='w-[70%] mt-5!' id="outlined-basic" label="Full name" variant="outlined" />
+                        {
+                            nameError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{nameError}</p>
+                        }
 
-                        <TextField className='w-[70%] mb-12.75!' id="outlined-basic" label="Password" variant="outlined" />
+                        <TextField onChange={handlePassword} className='w-[70%] mt-5!' id="outlined-password" label="Password" variant="outlined" type={showPassword ? "password" : "text"}
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={() => setShowPassword(!showPassword)}
+                                                edge="end" >
+                                                {showPassword ? <LuEyeClosed /> : <LuEye />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
 
-                        <Button className='w-[70%] bg-theme! capitalize! rounded-full! py-5! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">sign up</Button>
+                        {
+                            passwordError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{passwordError}</p>
+                        }
 
-                        <p className='font-sans font-normal text-[13.34px] text-dark'>Already  have an account ?<span className='font-sans font-bold text-[13.34px] text-accent'>  Sign In</span></p>
+                        <Button onClick={handleSignUp} className='w-[70%] bg-theme! capitalize! rounded-full! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">sign up</Button>
+
+                        <p className='ml-25 font-sans font-normal text-[13.34px] text-dark'>Already  have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'><Link to='/login'> Sign In</Link></span></p>
 
                     </div>
                 </div>
