@@ -10,8 +10,14 @@ import IconButton from '@mui/material/IconButton';
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { Link } from 'react-router-dom';
 
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+
+
+
 
 const SignUp = () => {
+    const auth = getAuth();
 
     //Data Storing
     const [email, setEmail] = useState('')
@@ -34,6 +40,21 @@ const SignUp = () => {
     //Eye Icon
 
     const [showPassword, setShowPassword] = useState(true)
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
+        setEmailError("");
+    }
+
+    const handleName = (e) => {
+        setName(e.target.value);
+        setNameError("")
+    }
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value);
+        setPasswordError("")
+    }
 
     const handleSignUp = () => {
 
@@ -59,29 +80,37 @@ const SignUp = () => {
             setPasswordError("Ensure the password is at least 8 characters long");
         }
         if (email && emailRegex.test(email) && name && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
-            console.log("account created");
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    toast.success("Registration Successful")
 
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    console.log(errorCode)
+                    if(errorCode.includes("auth/email-already-in-use")){
+                        setEmailError("Email Already In Use")
+                    }else if(errorCode.includes("auth/weak-password")){
+                        setPasswordError("Ensure the password is at least 8 characters long")
+                    }
+                });
         }
-
-    }
-
-    const handleEmail = (e) => {
-        setEmail(e.target.value);
-        setEmailError("");
-    }
-
-    const handleName = (e) => {
-        setName(e.target.value);
-        setNameError("")
-    }
-
-    const handlePassword = (e) => {
-        setPassword(e.target.value);
-        setPasswordError("")
     }
 
     return (
         <Grid container>
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             <Grid size={6}>
                 <div className='flex h-full justify-end items-center'>
                     <div className='w-150'>

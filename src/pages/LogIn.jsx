@@ -9,11 +9,20 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 
 
 const LogIn = () => {
+
+  const auth = getAuth();
+  const navigate = useNavigate();
+
 
   //Data Storing
   const [email, setEmail] = useState('')
@@ -35,7 +44,17 @@ const LogIn = () => {
 
   const [showPassword, setShowPassword] = useState(true)
 
-  const handleSignUp = () => {
+  const handleEmail = (e) => {
+    setEmail(e.target.value);
+    setEmailError("");
+  }
+
+  const handlePassword = (e) => {
+    setPassword(e.target.value);
+    setPasswordError("")
+  }
+
+  const handleLogIn = () => {
 
     if (!email) {
       setEmailError("Enter Your Email");
@@ -56,25 +75,45 @@ const LogIn = () => {
       setPasswordError("Ensure the password is at least 8 characters long");
     }
     if (email && emailRegex.test(email) && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
-      console.log("account created");
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          toast.success("Login Successful")
+
+          setTimeout(() => {
+
+            navigate('/home')
+
+          }, 2000)
+
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          console.log(errorCode)
+          if (errorCode.includes("auth/invalid-credential")) {
+            toast.error("invalid Credential")
+          }
+
+        });
 
     }
 
   }
 
-  const handleEmail = (e) => {
-    setEmail(e.target.value);
-    setEmailError("");
-  }
-
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
-    setPasswordError("")
-  }
-
 
   return (
     <Grid container>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Grid size={6}>
         <div className='flex h-full justify-end items-center'>
           <div className='w-150'>
@@ -88,7 +127,7 @@ const LogIn = () => {
 
             </div>
 
-            
+
 
             <TextField onChange={handleEmail} className='w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
             {
@@ -114,7 +153,7 @@ const LogIn = () => {
               passwordError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{passwordError}</p>
             }
 
-            <Button onClick={handleSignUp} className='w-[70%] bg-theme! capitalize! rounded-lg! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Login to Continue</Button>
+            <Button onClick={handleLogIn} className='w-[70%] bg-theme! capitalize! rounded-lg! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Login to Continue</Button>
 
             <p className='ml-27 font-sans font-normal text-[13.34px] text-dark'>Don’t have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'> <Link to="/">Sign Up</Link></span></p>
 
