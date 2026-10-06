@@ -178,7 +178,7 @@ const LogIn = () => {
               }}
             />
 
-            <p onClick={() => setPopup(!popup)} className='mt-5 font-sans font-bold text-[13.34px] text-red-500 cursor-pointer '>Forget Password</p>
+            <p onClick={() => setPopup(true)} className='mt-5 font-sans font-bold text-[13.34px] text-red-500 cursor-pointer '>Forget Password</p>
 
             {
               popup &&
@@ -188,7 +188,7 @@ const LogIn = () => {
                   <TextField onChange={handleEmail} className='cursor-pointer w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
                    <div className='flex gap-x-5'>
                     <Button onClick={handleLogIn} className='bg-theme! capitalize! rounded-lg! py-1 font-nunito! font-semibold! text-f20! text-white!' variant="contained">Continue</Button>
-                   <Button onClick={handleLogIn} className='bg-theme! capitalize! rounded-lg! py-1! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Cancel</Button>
+                   <Button onClick={() => setPopup(false)} className='bg-theme! capitalize! rounded-lg! py-1! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Cancel</Button>
                    </div>
 
                 </div>
