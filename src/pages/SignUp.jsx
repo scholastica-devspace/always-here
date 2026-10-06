@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { Link } from 'react-router-dom';
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
 
 
@@ -82,15 +82,24 @@ const SignUp = () => {
         if (email && emailRegex.test(email) && name && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
+
+                    sendEmailVerification(auth.currentUser)
+
                     toast.success("Registration Successful")
+                    setTimeout(() => {
+
+                        navigate('/home')
+
+                    }, 2000)
+
 
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     console.log(errorCode)
-                    if(errorCode.includes("auth/email-already-in-use")){
+                    if (errorCode.includes("auth/email-already-in-use")) {
                         setEmailError("Email Already In Use")
-                    }else if(errorCode.includes("auth/weak-password")){
+                    } else if (errorCode.includes("auth/weak-password")) {
                         setPasswordError("Ensure the password is at least 8 characters long")
                     }
                 });

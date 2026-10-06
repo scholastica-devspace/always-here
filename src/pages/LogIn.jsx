@@ -11,7 +11,7 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from 'react-router-dom';
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
 
 
@@ -22,6 +22,7 @@ const LogIn = () => {
 
   const auth = getAuth();
   const navigate = useNavigate();
+
 
 
   //Data Storing
@@ -43,6 +44,11 @@ const LogIn = () => {
   //Eye Icon
 
   const [showPassword, setShowPassword] = useState(true)
+
+  //Forget Password
+
+  const [popup, setPopup] = useState(false)
+
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -77,13 +83,19 @@ const LogIn = () => {
     if (email && emailRegex.test(email) && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          toast.success("Login Successful")
+          if (userCredential.user.emailVerified) {
+            toast.success("Login Successful")
+            setTimeout(() => {
 
-          setTimeout(() => {
+              navigate('/home')
 
-            navigate('/home')
+            }, 2000)
 
-          }, 2000)
+          } else {
+            toast.error("Verify Your Email")
+
+          }
+
 
         })
         .catch((error) => {
@@ -96,6 +108,23 @@ const LogIn = () => {
         });
 
     }
+
+  }
+
+  const handleGoogle = () => {
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        navigate('/home')
+
+      }).catch((error) => {
+        const errorCode = error.code;
+
+
+      });
+
+
 
   }
 
@@ -120,7 +149,7 @@ const LogIn = () => {
 
             <h2 className='pb-4 font-sans font-bold text-[33.34px] text-dark'>Login to your account!</h2>
 
-            <div className='w-[40%] py-5 px-6 rounded-lg flex gap-x-5 items-center justify-center border border-gray-300 my-9'>
+            <div onClick={handleGoogle} className='w-[40%] py-5 px-6 rounded-lg flex gap-x-5 items-center justify-center border border-gray-300 my-9'>
               <FcGoogle className='text-4xl' />
               <p className='font-sans font-semibold text-[13.34px] text-dark '>Login with Google </p>
 
@@ -129,7 +158,7 @@ const LogIn = () => {
 
 
 
-            <TextField onChange={handleEmail} className='w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
+            <TextField onChange={handleEmail} className='cursor-pointer w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
             {
               emailError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{emailError}</p>
             }
@@ -149,11 +178,31 @@ const LogIn = () => {
               }}
             />
 
+            <p onClick={() => setPopup(!popup)} className='mt-5 font-sans font-bold text-[13.34px] text-red-500 cursor-pointer '>Forget Password</p>
+
+            {
+              popup &&
+              <div className='absolute top-0 left-0 z-10 w-full h-screen bg-black/50 flex justify-center items-center'>
+                <div className='flex flex-col justify-center items-center gap-y-5 w-150 h-100 bg-white rounded-md p-10'>
+                  <h2 className='font-sans font-bold text-[33.34px] text-dark'>Forget Password</h2>
+                  <TextField onChange={handleEmail} className='cursor-pointer w-[70%]!' id="outlined-basic" label="Email Address" variant="outlined" />
+                   <div className='flex gap-x-5'>
+                    <Button onClick={handleLogIn} className='bg-theme! capitalize! rounded-lg! py-1 font-nunito! font-semibold! text-f20! text-white!' variant="contained">Continue</Button>
+                   <Button onClick={handleLogIn} className='bg-theme! capitalize! rounded-lg! py-1! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Cancel</Button>
+                   </div>
+
+                </div>
+              </div>
+            }
+
+
             {
               passwordError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{passwordError}</p>
             }
 
             <Button onClick={handleLogIn} className='w-[70%] bg-theme! capitalize! rounded-lg! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">Login to Continue</Button>
+
+
 
             <p className='ml-27 font-sans font-normal text-[13.34px] text-dark'>Don’t have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'> <Link to="/">Sign Up</Link></span></p>
 
