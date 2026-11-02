@@ -8,16 +8,19 @@ import { useState } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import { LuEye, LuEyeClosed } from "react-icons/lu";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner'
+
 
 
 
 
 const SignUp = () => {
     const auth = getAuth();
+    const navigate = useNavigate();
 
     //Data Storing
     const [email, setEmail] = useState('')
@@ -28,6 +31,7 @@ const SignUp = () => {
     const [emailError, setEmailError] = useState('')
     const [nameError, setNameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
+    const [loader, setLoader] = useState(false)
 
     //Regex 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -79,7 +83,11 @@ const SignUp = () => {
         } else if (!charactersRegex.test(password)) {
             setPasswordError("Ensure the password is at least 8 characters long");
         }
+
         if (email && emailRegex.test(email) && name && password && lowercaseRegex.test(password) && uppercaseRegex.test(password) && digitRegex.test(password) && specialRegex.test(password) && charactersRegex.test(password)) {
+
+            setLoader(true)
+
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
 
@@ -88,15 +96,19 @@ const SignUp = () => {
                     toast.success("Registration Successful")
                     setTimeout(() => {
 
-                        navigate('/home')
+                        navigate('/login')
 
                     }, 2000)
+                    
 
 
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     console.log(errorCode)
+
+                    setLoader(false)
+
                     if (errorCode.includes("auth/email-already-in-use")) {
                         setEmailError("Email Already In Use")
                     } else if (errorCode.includes("auth/weak-password")) {
@@ -157,9 +169,30 @@ const SignUp = () => {
                             passwordError && <p className='font-nunito font-bold text-[16px] text-red-500 py-3 w-[70%] flex items-center gap-2'><BiError />{passwordError}</p>
                         }
 
-                        <Button onClick={handleSignUp} className='w-[70%] bg-theme! capitalize! rounded-full! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">sign up</Button>
 
-                        <p className='ml-25 font-sans font-normal text-[13.34px] text-dark'>Already  have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'><Link to='/login'> Sign In</Link></span></p>
+                        {
+                            loader ?
+
+                            <div className='flex justify-center w-[70%] py-3'>
+                                <ThreeDots
+                                    visible={true}
+                                    height="70"
+                                    width="70"
+                                    color="#5F35F5"
+                                    radius="5"
+                                    ariaLabel="three-dots-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+                                />
+                            </div>
+                        
+                                :
+
+                                <Button onClick={handleSignUp} className='w-[70%] bg-theme! capitalize! rounded-full! py-5!  mt-12.75! mb-8.75! font-nunito! font-semibold! text-f20! text-white!' variant="contained">sign up</Button>
+
+                        }
+
+                        <p className='w-[70%] flex justify-center gap-2 font-sans font-normal text-[13.34px] text-dark'>Already  have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'><Link to='/login'>Sign In</Link></span></p>
 
                     </div>
                 </div>
