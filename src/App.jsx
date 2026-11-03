@@ -2,7 +2,8 @@ import {
   createRoutesFromElements,
   createBrowserRouter,
   RouterProvider,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import LogIn from "./pages/LogIn";
@@ -15,6 +16,7 @@ import RootLayout from "./components/RootLayout";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
+      <Route path="/" element={<Navigate to="/signin" replace />} />
       <Route path="/signin" element={<SignUp />}></Route>
       <Route path="/login" element={<LogIn />}></Route>
 
