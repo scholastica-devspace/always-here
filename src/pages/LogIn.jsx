@@ -254,7 +254,7 @@ const LogIn = () => {
 
             }
 
-            <p onClick={() => setPopup(true)} className='my-3 font-nunito font-bold text-[18px] text-theme cursor-pointer w-[70%] flex justify-center '>Forgotten Password ?</p>
+            <p onClick={() => setPopup(true)} className='mt-5 mb-9 font-nunito font-bold text-[18px] text-theme cursor-pointer w-[70%] flex justify-center '>Forgotten Password ?</p>
 
             {
               popup &&
@@ -277,7 +277,7 @@ const LogIn = () => {
             }
 
 
-            <p className='gap-2 font-sans font-normal text-[13.34px] text-dark w-[70%] flex justify-center mt-5'>Don’t have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'> <Link to="/">Sign Up</Link></span></p>
+            <p className='gap-2 font-sans font-normal text-[13.34px] text-dark w-[70%] flex justify-center'>Don’t have an account ? <span className='font-sans font-bold text-[13.34px] text-accent cursor-pointer'> <Link to="/">Sign Up</Link></span></p>
 
           </div>
         </div>
